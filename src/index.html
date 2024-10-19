@@ -1,55 +1,91 @@
 <!DOCTYPE html>
-<html>
-    <head>
-<title>How White Are My Teeth?</title>
-<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name = "viewport" content = "width = device-width, initial-scale=1.0">
-<title>How White Are Your Teeth?</title>
-<style>
-    h1{
-        font-family: sans-serif;
-        color: #333;
-}
-body{
-    margin: 50px;
-}
-#container{
-    margin: 0px auto;
-    width: 867px;
-    height: 650px;
-    border: 10px #333 solid;
-}
-#videoElement {
-    width: 867px;
-    height: 650px;
-    background-color: #666
-}
-
-</style>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How White Are My Teeth?</title>
+    <style>
+        h1 {
+            font-family: sans-serif;
+            color: #333;
+        }
+        body {
+            margin: 50px;
+        }
+        #container {
+            margin: 0 auto;
+            width: 867px;
+            height: 650px;
+            border: 10px #333 solid;
+        }
+        #videoElement, #canvas {
+            width: 867px;
+            height: 650x;
+            position: absolute;
+            
+        }
+        #canvas {
+            display: none;
+        }
+        #captureButton {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #captureButton:hover {
+            background-color: #555;
+        }
+    </style>
 </head>
 <body>
     <h1>Smile Cam</h1>
-    <div id = "container">
-        <video autoplay="true" id="videoElement">
-
-        </video>
+    <div id="container">
+        <video autoplay="true" id="videoElement"></video>
+        <canvas id="canvas"></canvas>
     </div>
+    
+    <!-- Capture Button -->
+    <button id="captureButton">Capture</button>
+    
+    <!-- Canvas to show captured image -->
+    <canvas id="canvas"></canvas>
+
     <script>
         let video = document.querySelector("#videoElement");
+        let canvas = document.querySelector("#canvas");
+        let captureButton = document.querySelector("#captureButton");
+        let context = canvas.getContext("2d");
+
+        // Access the webcam video stream
         if (navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia({video:true})
-            .then(function(stream) {
-                video.srcObject = stream;
-            })
-            .catch (function(error){
-                console.log("Something went wrong!");
-
-            })
-        }else{
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function (stream) {
+                    video.srcObject = stream;
+                })
+                .catch(function (error) {
+                    console.log("Something went wrong: ", error);
+                });
+        } else {
             console.log("getUserMedia not supported!");
-
         }
+
+        // Capture a frame from the video when the button is clicked
+        captureButton.addEventListener("click", function() {
+            // Set the canvas width and height to match the video element
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            // Draw the current video frame onto the canvas
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            video.style.display = "none";
+            canvas.style.display = "block";
+        });
     </script>
 </body>
 </html>
