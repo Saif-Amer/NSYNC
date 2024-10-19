@@ -2,8 +2,54 @@
 <html>
     <head>
 <title>How White Are My Teeth?</title>
-    </head>
-<body>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name = "viewport" content = "width = device-width, initial-scale=1.0">
+<title>How White Are Your Teeth?</title>
+<style>
+    h1{
+        font-family: sans-serif;
+        color: #333;
+}
+body{
+    margin: 50px;
+}
+#container{
+    margin: 0px auto;
+    width: 867px;
+    height: 650px;
+    border: 10px #333 solid;
+}
+#videoElement {
+    width: 867px;
+    height: 650px;
+    background-color: #666
+}
 
+</style>
+</head>
+<body>
+    <h1>Smile Cam</h1>
+    <div id = "container">
+        <video autoplay="true" id="videoElement">
+
+        </video>
+    </div>
+    <script>
+        let video = document.querySelector("#videoElement");
+        if (navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({video:true})
+            .then(function(stream) {
+                video.srcObject = stream;
+            })
+            .catch (function(error){
+                console.log("Something went wrong!");
+
+            })
+        }else{
+            console.log("getUserMedia not supported!");
+
+        }
+    </script>
 </body>
 </html>
