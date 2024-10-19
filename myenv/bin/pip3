@@ -1,4 +1,4 @@
-#!/Users/aidantyler/Desktop/NSYNC-1/myenv/bin/python
+#!/Users/aidantyler/Desktop/NSYNC/myenv/bin/python3.13
 # -*- coding: utf-8 -*-
 import re
 import sys
