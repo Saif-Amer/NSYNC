@@ -1,24 +1,27 @@
 const express = require('express');
 const path = require('path');
 const multer = require('multer');
-const fs = require('fs'); // Import fs module to work with the file system
+const fs = require('fs');
+const { exec } = require('child_process'); // For executing Python scripts
 
 const app = express();
-const PORT = 3001;
+const PORT = 4000;  // Or any other available port
+
 
 // Create the uploads folder if it doesn't exist
 const uploadFolder = 'uploads';
 if (!fs.existsSync(uploadFolder)){
     fs.mkdirSync(uploadFolder);
 }
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Set up storage for multer
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, uploadFolder); // Use the uploadFolder variable here
+        cb(null, uploadFolder);
     },
     filename: function (req, file, cb) {
-        cb(null, file.originalname); // Use original file name
+        cb(null, file.originalname);
     }
 });
 
@@ -37,7 +40,21 @@ app.post('/upload', upload.single('image'), (req, res) => {
     }
 
     console.log('File uploaded successfully:', req.file);
-    res.json({ message: 'File uploaded successfully', file: req.file });
+
+    // Call your facial feature recognition script here
+    exec(`python3 /Users/aidantyler/Desktop/NSYNC-2/recognizeFace.py ${req.file.path}`, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Error executing the script: ${error.message}`);
+            return res.status(500).send('Error processing the image.');
+        }
+        if (stderr) {
+            console.error(`Script stderr: ${stderr}`);
+            return res.status(500).send('Error processing the image.');
+        }
+
+        console.log(`Script output: ${stdout}`);
+        res.json({ message: 'File uploaded and processed successfully', file: req.file });
+    });
 });
 
 // Start the server
