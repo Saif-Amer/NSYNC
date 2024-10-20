@@ -15,7 +15,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # Max file size limit
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB limit
 
-@app.route('/upload', methods=['POST'])
+@app.route('/uploads', methods=['POST'])
 def upload_file():
     if 'image' not in request.files:
         return jsonify({"error": "No file part"}), 400
