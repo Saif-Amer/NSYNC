@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>How White Are My Teeth?</title>
+    <title>Smile Cam</title>
     <style>
         h1 {
             font-family: sans-serif;
@@ -28,7 +28,7 @@
         #canvas {
             display: none;
         }
-        #captureButton {
+        #captureButton, #retakeButton, #continueButton {
             display: block;
             margin: 20px auto;
             padding: 10px 20px;
@@ -38,15 +38,11 @@
             border: none;
             cursor: pointer;
         }
-        #captureButton:hover {
+        #captureButton:hover, #retakeButton:hover, #continueButton:hover {
             background-color: #555;
         }
-        /* Style for displaying the extracted mouth image */
-        #extractedMouth {
+        #retakeButton, #continueButton {
             display: none;
-            margin: 20px auto;
-            border: 5px #333 solid;
-            max-width: 867px;
         }
     </style>
 </head>
@@ -59,16 +55,20 @@
     
     <!-- Capture Button -->
     <button id="captureButton">Capture</button>
+    <!-- Retake Button -->
+    <button id="retakeButton">Retake</button>
+    <!-- Continue Button -->
+    <!-- In index.html -->
+<button id="continueButton" onclick="window.location.href='/secondPage'">Continue</button>
 
-    <!-- Placeholder for the extracted mouth image -->
-    <img id="extractedMouth" alt="Extracted Mouth Image">
 
     <script>
         let video = document.querySelector("#videoElement");
         let canvas = document.querySelector("#canvas");
         let captureButton = document.querySelector("#captureButton");
+        let retakeButton = document.querySelector("#retakeButton");
+        let continueButton = document.querySelector("#continueButton");
         let context = canvas.getContext("2d");
-        let extractedMouth = document.querySelector("#extractedMouth");
 
         // Access the webcam video stream
         if (navigator.mediaDevices.getUserMedia) {
@@ -102,6 +102,9 @@
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             video.style.display = "none"; // Hide video
             canvas.style.display = "block"; // Show canvas
+            captureButton.style.display = "none"; // Hide capture button
+            retakeButton.style.display = "block"; // Show retake button
+            continueButton.style.display = "block"; // Show continue button
 
             // Convert canvas to JPEG and send to server
             canvas.toBlob(function(blob) {
@@ -110,27 +113,31 @@
                     formData.append("image", blob, "captured_image.jpg");
 
                     // Send the image to the server
-                    fetch("/upload", {
+                    fetch("/uploads", {
                         method: "POST",
                         body: formData,
                     })
                     .then(response => response.json())
                     .then(data => {
                         console.log("Image uploaded successfully:", data);
-
-                        // Assuming the server responds with a URL to the extracted image
-                        if (data.extractedMouthUrl) {
-                            extractedMouth.src = data.extractedMouthUrl;  // Set the image source
-                            extractedMouth.style.display = "block";  // Show the extracted image
-                        }
                     })
                     .catch((error) => {
-                        alert("Error uploading image:", error);
+                        console.log("Error uploading image:", error);
                     });
                 } else {
-                    alert("Failed to capture image.");
+                    console.log("Failed to capture image.");
                 }
             }, "image/jpeg");
+        });
+
+        // Retake the picture
+        retakeButton.addEventListener("click", function() {
+            console.log("Retake button clicked");
+            canvas.style.display = "none"; // Hide canvas
+            video.style.display = "block"; // Show video again
+            captureButton.style.display = "block"; // Show capture button
+            retakeButton.style.display = "none"; // Hide retake button
+            continueButton.style.display = "none"; // Hide continue button
         });
     </script>
 </body>
