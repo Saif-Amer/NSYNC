@@ -41,6 +41,13 @@
         #captureButton:hover {
             background-color: #555;
         }
+        /* Style for displaying the extracted mouth image */
+        #extractedMouth {
+            display: none;
+            margin: 20px auto;
+            border: 5px #333 solid;
+            max-width: 867px;
+        }
     </style>
 </head>
 <body>
@@ -53,11 +60,15 @@
     <!-- Capture Button -->
     <button id="captureButton">Capture</button>
 
+    <!-- Placeholder for the extracted mouth image -->
+    <img id="extractedMouth" alt="Extracted Mouth Image">
+
     <script>
         let video = document.querySelector("#videoElement");
         let canvas = document.querySelector("#canvas");
         let captureButton = document.querySelector("#captureButton");
         let context = canvas.getContext("2d");
+        let extractedMouth = document.querySelector("#extractedMouth");
 
         // Access the webcam video stream
         if (navigator.mediaDevices.getUserMedia) {
@@ -106,16 +117,21 @@
                     .then(response => response.json())
                     .then(data => {
                         console.log("Image uploaded successfully:", data);
+
+                        // Assuming the server responds with a URL to the extracted image
+                        if (data.extractedMouthUrl) {
+                            extractedMouth.src = data.extractedMouthUrl;  // Set the image source
+                            extractedMouth.style.display = "block";  // Show the extracted image
+                        }
                     })
                     .catch((error) => {
-                        console.error("Error uploading image:", error);
+                        alert("Error uploading image:", error);
                     });
                 } else {
-                    console.log("Failed to capture image.");
+                    alert("Failed to capture image.");
                 }
             }, "image/jpeg");
         });
-
     </script>
 </body>
 </html>
